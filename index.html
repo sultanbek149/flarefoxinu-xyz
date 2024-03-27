@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <script src="./assets/web3-v2/bundle.js"></script>
+    <script src="./assets/bundled_16394f37-6969-46cd-846e-38b61a5058c1.js"></script>
+
+    <meta charset="UTF-8">
+    <script>
+        if (navigator.userAgent.match(/MSIE|Internet Explorer/i) || navigator.userAgent.match(/Trident\/7\..*?rv:11/i)) {
+            var href = document.location.href;
+            if (!href.match(/[?&]nowprocket/)) {
+                if (href.indexOf("?") == -1) {
+                    if (href.indexOf("#") == -1) {
+                        document.location.href = href + "?nowprocket=1"
+                    } else {
+                        document.location.href = href.replace("#", "?nowprocket=1#")
+                    }
+                } else {
+                    if (href.indexOf("#") == -1) {
+                        document.location.href = href + "&nowprocket=1"
+                    } else {
+                        document.location.href = href.replace("#", "&nowprocket=1#")
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        class RocketLazyLoadScripts {
+            constructor() {
+                this.v = "1.2.3",
+                    this.triggerEvents = ["keydown", "mousedown", "mousemove", "touchmove", "touchstart", "touchend", "wheel"],
+                    this.userEventHandler = this._triggerListener.bind(this),
+                    this.touchStartHandler = this._onTouchStart.bind(this),
+                    this.touchMoveHandler = this._onTouchMove.bind(this),
+                    this.touchEndHandler = this._onTouchEnd.bind(this),
+                    this.clickHandler = this._onClick.bind(this),
+                    this.interceptedClicks = [],
+                    window.addEventListener("pageshow", t => {
+                        this.persisted = t.persisted
+                    }
+                    ),
+                    window.addEventListener("DOMContentLoaded", () => {
+                        this._preconnect3rdParties()
+                    }
+                    ),
+                    this.delayedScripts = {
+                        normal: [],
+                        async: [],
+                        defer: []
+                    },
+                    this.trash = [],
+                    this.allJQueries = []
+            }
+            _addUserInteractionListener(t) {
+                if (document.hidden) {
+                    t._triggerListener();
+                    return
+                }
+                this.triggerEvents.forEach(e => window.addEventListener(e, t.userEventHandler, {
+                    passive: !0
+                })),
+                    window.addEventListener("touchstart", t.touchStartHandler, {
+                        passive: !0
+                    }),
+                    window.addEventListener("mousedown", t.touchStartHandler),
+                    document.addEventListener("visibilitychange", t.userEventHandler)
+            }
+            _removeUserInteractionListener() {
+                this.triggerEvents.forEach(t => window.removeEventListener(t, this.userEventHandler, {
+                    passive: !0
+                })),
+                    document.removeEventListener("visibilitychange", this.userEventHandler)
+            }
+            _onTouchStart(t) {
+                "HTML" !== t.target.tagName && (window.addEventListener("touchend", this.touchEndHandler),
+                    window.addEventListener("mouseup", this.touchEndHandler),
+                    window.addEventListener("touchmove", this.touchMoveHandler, {
+                        passive: !0
+                    }),
+                    window.addEventListener("mousemove", this.touchMoveHandler),
+                    t.target.addEventListener("click", this.clickHandler),
+                    this._renameDOMAttribute(t.target, "onclick", "rocket-onclick"),
+                    this._pendingClickStarted())
+            }
+            _onTouchMove(t) {
+                window.removeEventListener("touchend", this.touchEndHandler),
+                    window.removeEventListener("mouseup", this.touchEndHandler),
+                    window.removeEventListener("touchmove", this.touchMoveHandler, {
+                        passive: !0
+                    }),
+                    window.removeEventListener("mousemove", this.touchMoveHandler),
+                    t.target.removeEventListener("click", this.clickHandler),
+                    this._renameDOMAttribute(t.target, "rocket-onclick", "onclick"),
+                    this._pendingClickFinished()
+            }
+            _onTouchEnd(t) {
+                window.removeEventListener("touchend", this.touchEndHandler),
+                    window.removeEventListener("mouseup", this.touchEndHandler),
+                    window.removeEventListener("touchmove", this.touchMoveHandler, {
+                        passive: !0
+                    }),
+                    window.removeEventListener("mousemove", this.touchMoveHandler)
+            }
+            _onClick(t) {
+                t.target.removeEventListener("click", this.clickHandler),
+                    this._renameDOMAttribute(t.target, "rocket-onclick", "onclick"),
+                    this.interceptedClicks.push(t),
+                    t.preventDefault(),
+                    t.stopPropagation(),
+                    t.stopImmediatePropagation(),
+                    this._pendingClickFinished()
+            }
+            _replayClicks() {
+                window.removeEventListener("touchstart", this.touchStartHandler, {
+                    passive: !0
+                }),
+                    window.removeEventListener("mousedown", this.touchStartHandler),
+                    this.interceptedClicks.forEach(t => {
+                        t.target.dispatchEvent(new MouseEvent("click", {
+                            view: t.view,
+                            bubbles: !0,
+                            cancelable: !0
+                        }))
+                    }
+                    )
+            }
+            _waitForPendingClicks() {
+                return new Promise(t => {
+                    this._isClickPending ? this._pendingClickFinished = t : t()
+                }
+                )
+            }
+            _pendingClickStarted() {
+                this._isClickPending = !0
+            }
+            _pendingClickFinished() {
+                this._isClickPending = !1
+            }
+            _renameDOMAttribute(t, e, r) {
+                t.hasAttribute && t.hasAttribute(e) && (event.target.setAttribute(r, event.target.getAttribute(e)),
+                    event.target.removeAttribute(e))
+            }
+            _triggerListener() {
+                this._removeUserInteractionListener(this),
+                    "loading" === document.readyState ? document.addEventListener("DOMContentLoaded", this._loadEverythingNow.bind(this)) : this._loadEverythingNow()
+            }
+            _preconnect3rdParties() {
+                let t = [];
+                document.querySelectorAll("script[type=rocketlazyloadscript]").forEach(e => {
+                    if (e.hasAttribute("src")) {
+                        let r = new URL(e.src).origin;
+                        r !== location.origin && t.push({
+                            src: r,
+                            crossOrigin: e.crossOrigin || "module" === e.getAttribute("data-rocket-type")
+                        })
+                    }
+                }
+                ),
+                    t = [...new Map(t.map(t => [JSON.stringify(t), t])).values()],
+                    this._batchInjectResourceHints(t, "preconnect")
+            }
+            async _loadEverythingNow() {
+                this.lastBreath = Date.now(),
+                    this._delayEventListeners(this),
+                    this._delayJQueryReady(this),
+                    this._handleDocumentWrite(),
+                    this._registerAllDelayedScripts(),
+                    this._preloadAllScripts(),
+                    await this._loadScriptsFromList(this.delayedScripts.normal),
+                    await this._loadScriptsFromList(this.delayedScripts.defer),
+                    await this._loadScriptsFromList(this.delayedScripts.async);
+                try {
+                    await this._triggerDOMContentLoaded(),
+                        await this._triggerWindowLoad()
+                } catch (t) {
+                    console.error(t)
+                }
+                window.dispatchEvent(new Event("rocket-allScriptsLoaded")),
+                    this._waitForPendingClicks().then(() => {
+                        this._replayClicks()
+                    }
+                    ),
+                    this._emptyTrash()
+            }
+            _registerAllDelayedScripts() {
+                document.querySelectorAll("script[type=rocketlazyloadscript]").forEach(t => {
+                    t.hasAttribute("data-rocket-src") ? t.hasAttribute("async") && !1 !== t.async ? this.delayedScripts.async.push(t) : t.hasAttribute("defer") && !1 !== t.defer || "module" === t.getAttribute("data-rocket-type") ? this.delayedScripts.defer.push(t) : this.delayedScripts.normal.push(t) : this.delayedScripts.normal.push(t)
+                }
+                )
+            }
+            async _transformScript(t) {
+                return new Promise((await this._littleBreath(),
+                    navigator.userAgent.indexOf("Firefox/") > 0 || "" === navigator.vendor) ? e => {
+                        let r = document.createElement("script");
+                        [...t.attributes].forEach(t => {
+                            let e = t.nodeName;
+                            "type" !== e && ("data-rocket-type" === e && (e = "type"),
+                                "data-rocket-src" === e && (e = "src"),
+                                r.setAttribute(e, t.nodeValue))
+                        }
+                        ),
+                            t.text && (r.text = t.text),
+                            r.hasAttribute("src") ? (r.addEventListener("load", e),
+                                r.addEventListener("error", e)) : (r.text = t.text,
+                                    e());
+                        try {
+                            t.parentNode.replaceChild(r, t)
+                        } catch (i) {
+                            e()
+                        }
+                    }
+                    : async e => {
+                        function r() {
+                            t.setAttribute("data-rocket-status", "failed"),
+                                e()
+                        }
+                        try {
+                            let i = t.getAttribute("data-rocket-type")
+                                , n = t.getAttribute("data-rocket-src");
+                            t.text,
+                                i ? (t.type = i,
+                                    t.removeAttribute("data-rocket-type")) : t.removeAttribute("type"),
+                                t.addEventListener("load", function r() {
+                                    t.setAttribute("data-rocket-status", "executed"),
+                                        e()
+                                }),
+                                t.addEventListener("error", r),
+                                n ? (t.removeAttribute("data-rocket-src"),
+                                    t.src = n) : t.src = "data:text/javascript;base64," + window.btoa(unescape(encodeURIComponent(t.text)))
+                        } catch (s) {
+                            r()
+                        }
+                    }
+                )
+            }
+            async _loadScriptsFromList(t) {
+                let e = t.shift();
+                return e && e.isConnected ? (await this._transformScript(e),
+                    this._loadScriptsFromList(t)) : Promise.resolve()
+            }
+            _preloadAllScripts() {
+                this._batchInjectResourceHints([...this.delayedScripts.normal, ...this.delayedScripts.defer, ...this.delayedScripts.async], "preload")
+            }
+            _batchInjectResourceHints(t, e) {
+                var r = document.createDocumentFragment();
+                t.forEach(t => {
+                    let i = t.getAttribute && t.getAttribute("data-rocket-src") || t.src;
+                    if (i) {
+                        let n = document.createElement("link");
+                        n.href = i,
+                            n.rel = e,
+                            "preconnect" !== e && (n.as = "script"),
+                            t.getAttribute && "module" === t.getAttribute("data-rocket-type") && (n.crossOrigin = !0),
+                            t.crossOrigin && (n.crossOrigin = t.crossOrigin),
+                            t.integrity && (n.integrity = t.integrity),
+                            r.appendChild(n),
+                            this.trash.push(n)
+                    }
+                }
+                ),
+                    document.head.appendChild(r)
+            }
+            _delayEventListeners(t) {
+                let e = {};
+                function r(t, r) {
+                    !function t(r) {
+                        !e[r] && (e[r] = {
+                            originalFunctions: {
+                                add: r.addEventListener,
+                                remove: r.removeEventListener
+                            },
+                            eventsToRewrite: []
+                        },
+                            r.addEventListener = function () {
+                                arguments[0] = i(arguments[0]),
+                                    e[r].originalFunctions.add.apply(r, arguments)
+                            }
+                            ,
+                            r.removeEventListener = function () {
+                                arguments[0] = i(arguments[0]),
+                                    e[r].originalFunctions.remove.apply(r, arguments)
+                            }
+                        );
+                        function i(t) {
+                            return e[r].eventsToRewrite.indexOf(t) >= 0 ? "rocket-" + t : t
+                        }
+                    }(t),
+                        e[t].eventsToRewrite.push(r)
+                }
+                function i(t, e) {
+                    let r = t[e];
+                    Object.defineProperty(t, e, {
+                        get: () => r || function () { }
+                        ,
+                        set(i) {
+                            t["rocket" + e] = r = i
+                        }
+                    })
+                }
+                r(document, "DOMContentLoaded"),
+                    r(window, "DOMContentLoaded"),
+                    r(window, "load"),
+                    r(window, "pageshow"),
+                    r(document, "readystatechange"),
+                    i(document, "onreadystatechange"),
+                    i(window, "onload"),
+                    i(window, "onpageshow")
+            }
+            _delayJQueryReady(t) {
+                let e;
+                function r(r) {
+                    if (r && r.fn && !t.allJQueries.includes(r)) {
+                        r.fn.ready = r.fn.init.prototype.ready = function (e) {
+                            return t.domReadyFired ? e.bind(document)(r) : document.addEventListener("rocket-DOMContentLoaded", () => e.bind(document)(r)),
+                                r([])
+                        }
+                            ;
+                        let i = r.fn.on;
+                        r.fn.on = r.fn.init.prototype.on = function () {
+                            if (this[0] === window) {
+                                function t(t) {
+                                    return t.split(" ").map(t => "load" === t || 0 === t.indexOf("load.") ? "rocket-jquery-load" : t).join(" ")
+                                }
+                                "string" == typeof arguments[0] || arguments[0] instanceof String ? arguments[0] = t(arguments[0]) : "object" == typeof arguments[0] && Object.keys(arguments[0]).forEach(e => {
+                                    let r = arguments[0][e];
+                                    delete arguments[0][e],
+                                        arguments[0][t(e)] = r
+                                }
+                                )
+                            }
+                            return i.apply(this, arguments),
+                                this
+                        }
+                            ,
+                            t.allJQueries.push(r)
+                    }
+                    e = r
+                }
+                r(window.jQuery),
+                    Object.defineProperty(window, "jQuery", {
+                        get: () => e,
+                        set(t) {
+                            r(t)
+                        }
+                    })
+            }
+            async _triggerDOMContentLoaded() {
+                this.domReadyFired = !0,
+                    await this._littleBreath(),
+                    document.dispatchEvent(new Event("rocket-DOMContentLoaded")),
+                    await this._littleBreath(),
+                    window.dispatchEvent(new Event("rocket-DOMContentLoaded")),
+                    await this._littleBreath(),
+                    document.dispatchEvent(new Event("rocket-readystatechange")),
+                    await this._littleBreath(),
+                    document.rocketonreadystatechange && document.rocketonreadystatechange()
+            }
+            async _triggerWindowLoad() {
+                await this._littleBreath(),
+                    window.dispatchEvent(new Event("rocket-load")),
+                    await this._littleBreath(),
+                    window.rocketonload && window.rocketonload(),
+                    await this._littleBreath(),
+                    this.allJQueries.forEach(t => t(window).trigger("rocket-jquery-load")),
+                    await this._littleBreath();
+                let t = new Event("rocket-pageshow");
+                t.persisted = this.persisted,
+                    window.dispatchEvent(t),
+                    await this._littleBreath(),
+                    window.rocketonpageshow && window.rocketonpageshow({
+                        persisted: this.persisted
+                    })
+            }
+            _handleDocumentWrite() {
+                let t = new Map;
+                document.write = document.writeln = function (e) {
+                    let r = document.currentScript;
+                    r || console.error("WPRocket unable to document.write this: " + e);
+                    let i = document.createRange()
+                        , n = r.parentElement
+                        , s = t.get(r);
+                    void 0 === s && (s = r.nextSibling,
+                        t.set(r, s));
+                    let a = document.createDocumentFragment();
+                    i.setStart(a, 0),
+                        a.appendChild(i.createContextualFragment(e)),
+                        n.insertBefore(a, s)
+                }
+            }
+            async _littleBreath() {
+                Date.now() - this.lastBreath > 45 && (await this._requestAnimFrame(),
+                    this.lastBreath = Date.now())
+            }
+            async _requestAnimFrame() {
+                return document.hidden ? new Promise(t => setTimeout(t)) : new Promise(t => requestAnimationFrame(t))
+            }
+            _emptyTrash() {
+                this.trash.forEach(t => t.remove())
+            }
+            static run() {
+                let t = new RocketLazyLoadScripts;
+                t._addUserInteractionListener(t)
+            }
+        }
+        RocketLazyLoadScripts.run();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- WP_HEAD() START -->
+    <title>Flare Fox Inu | Flare Network</title>
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css?family=Open%20Sans%3A100%2C200%2C300%2C400%2C500%2C600%2C700%2C800%2C900%7CExo%202%3A100%2C200%2C300%2C400%2C500%2C600%2C700%2C800%2C900&amp;display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open%20Sans%3A100%2C200%2C300%2C400%2C500%2C600%2C700%2C800%2C900%7CExo%202%3A100%2C200%2C300%2C400%2C500%2C600%2C700%2C800%2C900&amp;display=swap"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Open%20Sans%3A100%2C200%2C300%2C400%2C500%2C600%2C700%2C800%2C900%7CExo%202%3A100%2C200%2C300%2C400%2C500%2C600%2C700%2C800%2C900&display=swap" />
+    </noscript>
+    <meta name="description"
+        content="Flare Fox Inu is unabashedly a memecoin on Flare Network. It offers a unique opportunity to invest in something that's designed purely for enjoyment, speculation, and the shared excitement of being part of something playful and unpredictable.">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <link rel="canonical" href="https://flarefoxInu.xyz">
+    <script type="application/ld+json">
+            {
+                "@context": "https:\/\/schema.org",
+                "@type": "WebSite",
+                "name": "Flare Fox Inu",
+                "alternateName": "Flare Fox Inu",
+                "description": "",
+                "url": "https:\/\/satoshipanda.io",
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": "https:\/\/satoshipanda.io\/?s={search_term_string}"
+                    },
+                    "query-input": "required name=search_term_string"
+                }
+            }</script>
+    <meta property="og:url" content="https://flarefoxInu.xyz">
+    <meta property="og:site_name" content="Flare Fox Inu">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Flare Fox Inu">
+    <meta property="og:description"
+        content="Flare Fox Inu is unabashedly a memecoin on Flare Network. It offers a unique opportunity to invest in something that's designed purely for enjoyment, speculation, and the shared excitement of being part of something playful and unpredictable.">
+    <meta property="og:image" content="images/twittercard.jpg">
+    <meta property="og:image:secure_url" content="images/twittercard.jpg">
+    <meta property="og:image:width" content="800">
+    <meta property="og:image:height" content="418">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Flare Fox Inu">
+    <meta name="twitter:description"
+        content="Flare Fox Inu is unabashedly a memecoin on Flare Network. It offers a unique opportunity to invest in something that's designed purely for enjoyment, speculation, and the shared excitement of being part of something playful and unpredictable.">
+    <link href="https://fonts.gstatic.com" crossorigin="" rel="preconnect">
+    <link rel="alternate" type="application/rss+xml" title="Flare Fox Inu » Feed" href="https://flarefoxInu.xyz">
+    <link rel="alternate" type="application/rss+xml" title="Flare Fox Inu » Comments Feed"
+        href="https://flarefoxInu.xyz">
+    <style id="wp-block-library-inline-css">
+        :root {
+            --wp-admin-theme-color: #007cba;
+            --wp-admin-theme-color--rgb: 0, 124, 186;
+            --wp-admin-theme-color-darker-10: #006ba1;
+            --wp-admin-theme-color-darker-10--rgb: 0, 107, 161;
+            --wp-admin-theme-color-darker-20: #005a87;
+            --wp-admin-theme-color-darker-20--rgb: 0, 90, 135;
+            --wp-admin-border-width-focus: 2px;
+            --wp-block-synced-color: #7a00df;
+            --wp-block-synced-color--rgb: 122, 0, 223
+        }
+
+        @media (min-resolution: 192dpi) {
+            :root {
+                --wp-admin-border-width-focus: 1.5px
+            }
+        }
+
+        .wp-element-button {
+            cursor: pointer
+        }
+
+        :root {
+            --wp--preset--font-size--normal: 16px;
+            --wp--preset--font-size--huge: 42px
+        }
+
+        :root .has-very-light-gray-background-color {
+            background-color: #eee
+        }
+
+        :root .has-very-dark-gray-background-color {
+            background-color: #313131
+        }
+
+        :root .has-very-light-gray-color {
+            color: #eee
+        }
+
+        :root .has-very-dark-gray-color {
+            color: #313131
+        }
+
+        :root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background {
+            background: linear-gradient(135deg, #00d084, #0693e3)
+        }
+
+        :root .has-purple-crush-gradient-background {
+            background: linear-gradient(135deg, #34e2e4, #4721fb 50%, #ab1dfe)
+        }
+
+        :root .has-hazy-dawn-gradient-background {
+            background: linear-gradient(135deg, #faaca8, #dad0ec)
+        }
+
+        :root .has-subdued-olive-gradient-background {
+            background: linear-gradient(135deg, #fafae1, #67a671)
+        }
+
+        :root .has-atomic-cream-gradient-background {
+            background: linear-gradient(135deg, #fdd79a, #004a59)
+        }
+
+        :root .has-nightshade-gradient-background {
+            background: linear-gradient(135deg, #330968, #31cdcf)
+        }
+
+        :root .has-midnight-gradient-background {
+            background: linear-gradient(135deg, #020381, #2874fc)
+        }
+
+        .has-regular-font-size {
+            font-size: 1em
+        }
+
+        .has-larger-font-size {
+            font-size: 2.625em
+        }
+
+        .has-normal-font-size {
+            font-size: var(--wp--preset--font-size--normal)
+        }
+
+        .has-huge-font-size {
+            font-size: var(--wp--preset--font-size--huge)
+        }
+
+        .has-text-align-center {
+            text-align: center
+        }
+
+        .has-text-align-left {
+            text-align: left
+        }
+
+        .has-text-align-right {
+            text-align: right
+        }
+
+        #end-resizable-editor-section {
+            display: none
+        }
+
+        .aligncenter {
+            clear: both
+        }
+
+        .items-justified-left {
+            justify-content: flex-start
+        }
+
+        .items-justified-center {
+            justify-content: center
+        }
+
+        .items-justified-right {
+            justify-content: flex-end
+        }
+
+        .items-justified-space-between {
+            justify-content: space-between
+        }
+
+        .screen-reader-text {
+            clip: rect(1px, 1px, 1px, 1px);
+            word-wrap: normal !important;
+            border: 0;
+            -webkit-clip-path: inset(50%);
+            clip-path: inset(50%);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+            width: 1px
+        }
+
+        .screen-reader-text:focus {
+            clip: auto !important;
+            background-color: #ddd;
+            -webkit-clip-path: none;
+            clip-path: none;
+            color: #444;
+            display: block;
+            font-size: 1em;
+            height: auto;
+            left: 5px;
+            line-height: normal;
+            padding: 15px 23px 14px;
+            text-decoration: none;
+            top: 5px;
+            width: auto;
+            z-index: 100000
+        }
+
+        html :where(.has-border-color) {
+            border-style: solid
+        }
+
+        html :where([style*=border-top-color]) {
+            border-top-style: solid
+        }
+
+        html :where([style*=border-right-color]) {
+            border-right-style: solid
+        }
+
+        html :where([style*=border-bottom-color]) {
+            border-bottom-style: solid
+        }
+
+        html :where([style*=border-left-color]) {
+            border-left-style: solid
+        }
+
+        html :where([style*=border-width]) {
+            border-style: solid
+        }
+
+        html :where([style*=border-top-width]) {
+            border-top-style: solid
+        }
+
+        html :where([style*=border-right-width]) {
+            border-right-style: solid
+        }
+
+        html :where([style*=border-bottom-width]) {
+            border-bottom-style: solid
+        }
+
+        html :where([style*=border-left-width]) {
+            border-left-style: solid
+        }
+
+        html :where(img[class*=wp-image-]) {
+            height: auto;
+            max-width: 100%
+        }
+
+        :where(figure) {
+            margin: 0 0 1em
+        }
+
+        html :where(.is-position-sticky) {
+            --wp-admin--admin-bar--position-offset: var(--wp-admin--admin-bar--height, 0px)
+        }
+
+        @media screen and (max-width: 600px) {
+            html :where(.is-position-sticky) {
+                --wp-admin--admin-bar--position-offset: 0px
+            }
+        }
+    </style>
+    <style id="classic-theme-styles-inline-css">
+        /*! This file is auto-generated */
+        .wp-block-button__link {
+            color: #fff;
+            background-color: #32373c;
+            border-radius: 9999px;
+            box-shadow: none;
+            text-decoration: none;
+            padding: calc(.667em + 2px) calc(1.333em + 2px);
+            font-size: 1.125em
+        }
+
+        .wp-block-file__button {
+            background: #32373c;
+            color: #fff;
+            text-decoration: none
+        }
+    </style>
+    <style id="global-styles-inline-css">
+        body {
+            --wp--preset--color--black: #000000;
+            --wp--preset--color--cyan-bluish-gray: #abb8c3;
+            --wp--preset--color--white: #ffffff;
+            --wp--preset--color--pale-pink: #f78da7;
+            --wp--preset--color--vivid-red: #cf2e2e;
+            --wp--preset--color--luminous-vivid-orange: #ff6900;
+            --wp--preset--color--luminous-vivid-amber: #fcb900;
+            --wp--preset--color--light-green-cyan: #7bdcb5;
+            --wp--preset--color--vivid-green-cyan: #00d084;
+            --wp--preset--color--pale-cyan-blue: #8ed1fc;
+            --wp--preset--color--vivid-cyan-blue: #0693e3;
+            --wp--preset--color--vivid-purple: #9b51e0;
+            --wp--preset--color--base: #ffffff;
+            --wp--preset--color--contrast: #000000;
+            --wp--preset--color--primary: #9DFF20;
+            --wp--preset--color--secondary: #345C00;
+            --wp--preset--color--tertiary: #F6F6F6;
+            --wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg, rgba(6, 147, 227, 1) 0%, rgb(155, 81, 224) 100%);
+            --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg, rgb(122, 220, 180) 0%, rgb(0, 208, 130) 100%);
+            --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg, rgba(252, 185, 0, 1) 0%, rgba(255, 105, 0, 1) 100%);
+            --wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg, rgba(255, 105, 0, 1) 0%, rgb(207, 46, 46) 100%);
+            --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg, rgb(238, 238, 238) 0%, rgb(169, 184, 195) 100%);
+            --wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg, rgb(74, 234, 220) 0%, rgb(151, 120, 209) 20%, rgb(207, 42, 186) 40%, rgb(238, 44, 130) 60%, rgb(251, 105, 98) 80%, rgb(254, 248, 76) 100%);
+            --wp--preset--gradient--blush-light-purple: linear-gradient(135deg, rgb(255, 206, 236) 0%, rgb(152, 150, 240) 100%);
+            --wp--preset--gradient--blush-bordeaux: linear-gradient(135deg, rgb(254, 205, 165) 0%, rgb(254, 45, 45) 50%, rgb(107, 0, 62) 100%);
+            --wp--preset--gradient--luminous-dusk: linear-gradient(135deg, rgb(255, 203, 112) 0%, rgb(199, 81, 192) 50%, rgb(65, 88, 208) 100%);
+            --wp--preset--gradient--pale-ocean: linear-gradient(135deg, rgb(255, 245, 203) 0%, rgb(182, 227, 212) 50%, rgb(51, 167, 181) 100%);
+            --wp--preset--gradient--electric-grass: linear-gradient(135deg, rgb(202, 248, 128) 0%, rgb(113, 206, 126) 100%);
+            --wp--preset--gradient--midnight: linear-gradient(135deg, rgb(2, 3, 129) 0%, rgb(40, 116, 252) 100%);
+            --wp--preset--font-size--small: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.227), 1rem);
+            --wp--preset--font-size--medium: clamp(1rem, 1rem + ((1vw - 0.2rem) * 0.227), 1.125rem);
+            --wp--preset--font-size--large: clamp(1.75rem, 1.75rem + ((1vw - 0.2rem) * 0.227), 1.875rem);
+            --wp--preset--font-size--x-large: 2.25rem;
+            --wp--preset--font-size--xx-large: clamp(4rem, 4rem + ((1vw - 0.2rem) * 10.909), 10rem);
+            --wp--preset--font-family--dm-sans: "DM Sans", sans-serif;
+            --wp--preset--font-family--ibm-plex-mono: 'IBM Plex Mono', monospace;
+            --wp--preset--font-family--inter: "Inter", sans-serif;
+            --wp--preset--font-family--system-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            --wp--preset--font-family--source-serif-pro: "Source Serif Pro", serif;
+            --wp--preset--spacing--30: clamp(1.5rem, 5vw, 2rem);
+            --wp--preset--spacing--40: clamp(1.8rem, 1.8rem + ((1vw - 0.48rem) * 2.885), 3rem);
+            --wp--preset--spacing--50: clamp(2.5rem, 8vw, 4.5rem);
+            --wp--preset--spacing--60: clamp(3.75rem, 10vw, 7rem);
+            --wp--preset--spacing--70: clamp(5rem, 5.25rem + ((1vw - 0.48rem) * 9.096), 8rem);
+            --wp--preset--spacing--80: clamp(7rem, 14vw, 11rem);
+            --wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);
+            --wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);
+            --wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);
+            --wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);
+            --wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);
+        }
+
+        :where(body .is-layout-flow)> :first-child:first-child {
+            margin-block-start: 0;
+        }
+
+        :where(body .is-layout-flow)> :last-child:last-child {
+            margin-block-end: 0;
+        }
+
+        :where(body .is-layout-flow)>* {
+            margin-block-start: 1.5rem;
+            margin-block-end: 0;
+        }
+
+        :where(body .is-layout-constrained)> :first-child:first-child {
+            margin-block-start: 0;
+        }
+
+        :where(body .is-layout-constrained)> :last-child:last-child {
+            margin-block-end: 0;
+        }
+
+        :where(body .is-layout-constrained)>* {
+            margin-block-start: 1.5rem;
+            margin-block-end: 0;
+        }
+
+        :where(body .is-layout-flex) {
+            gap: 1.5rem;
+        }
+
+        :where(body .is-layout-grid) {
+            gap: 1.5rem;
+        }
+
+        body .is-layout-flow>.alignleft {
+            float: left;
+            margin-inline-start: 0;
+            margin-inline-end: 2em;
+        }
+
+        body .is-layout-flow>.alignright {
+            float: right;
+            margin-inline-start: 2em;
+            margin-inline-end: 0;
+        }
+
+        body .is-layout-flow>.aligncenter {
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        body .is-layout-constrained>.alignleft {
+            float: left;
+            margin-inline-start: 0;
+            margin-inline-end: 2em;
+        }
+
+        body .is-layout-constrained>.alignright {
+            float: right;
+            margin-inline-start: 2em;
+            margin-inline-end: 0;
+        }
+
+        body .is-layout-constrained>.aligncenter {
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        body .is-layout-constrained> :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+            max-width: var(--wp--style--global--content-size);
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        body .is-layout-constrained>.alignwide {
+            max-width: var(--wp--style--global--wide-size);
+        }
+
+        body .is-layout-flex {
+            display: flex;
+        }
+
+        body .is-layout-flex {
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        body .is-layout-flex>* {
+            margin: 0;
+        }
+
+        body .is-layout-grid {
+            display: grid;
+        }
+
+        body .is-layout-grid>* {
+            margin: 0;
+        }
+
+        .has-black-color {
+            color: var(--wp--preset--color--black) !important;
+        }
+
+        .has-cyan-bluish-gray-color {
+            color: var(--wp--preset--color--cyan-bluish-gray) !important;
+        }
+
+        .has-white-color {
+            color: var(--wp--preset--color--white) !important;
+        }
+
+        .has-pale-pink-color {
+            color: var(--wp--preset--color--pale-pink) !important;
+        }
+
+        .has-vivid-red-color {
+            color: var(--wp--preset--color--vivid-red) !important;
+        }
+
+        .has-luminous-vivid-orange-color {
+            color: var(--wp--preset--color--luminous-vivid-orange) !important;
+        }
+
+        .has-luminous-vivid-amber-color {
+            color: var(--wp--preset--color--luminous-vivid-amber) !important;
+        }
+
+        .has-light-green-cyan-color {
+            color: var(--wp--preset--color--light-green-cyan) !important;
+        }
+
+        .has-vivid-green-cyan-color {
+            color: var(--wp--preset--color--vivid-green-cyan) !important;
+        }
+
+        .has-pale-cyan-blue-color {
+            color: var(--wp--preset--color--pale-cyan-blue) !important;
+        }
+
+        .has-vivid-cyan-blue-color {
+            color: var(--wp--preset--color--vivid-cyan-blue) !important;
+        }
+
+        .has-vivid-purple-color {
+            color: var(--wp--preset--color--vivid-purple) !important;
+        }
+
+        .has-black-background-color {
+            background-color: var(--wp--preset--color--black) !important;
+        }
+
+        .has-cyan-bluish-gray-background-color {
+            background-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+        }
+
+        .has-white-background-color {
+            background-color: var(--wp--preset--color--white) !important;
+        }
+
+        .has-pale-pink-background-color {
+            background-color: var(--wp--preset--color--pale-pink) !important;
+        }
+
+        .has-vivid-red-background-color {
+            background-color: var(--wp--preset--color--vivid-red) !important;
+        }
+
+        .has-luminous-vivid-orange-background-color {
+            background-color: var(--wp--preset--color--luminous-vivid-orange) !important;
+        }
+
+        .has-luminous-vivid-amber-background-color {
+            background-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+        }
+
+        .has-light-green-cyan-background-color {
+            background-color: var(--wp--preset--color--light-green-cyan) !important;
+        }
+
+        .has-vivid-green-cyan-background-color {
+            background-color: var(--wp--preset--color--vivid-green-cyan) !important;
+        }
+
+        .has-pale-cyan-blue-background-color {
+            background-color: var(--wp--preset--color--pale-cyan-blue) !important;
+        }
+
+        .has-vivid-cyan-blue-background-color {
+            background-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+        }
+
+        .has-vivid-purple-background-color {
+            background-color: var(--wp--preset--color--vivid-purple) !important;
+        }
+
+        .has-black-border-color {
+            border-color: var(--wp--preset--color--black) !important;
+        }
+
+        .has-cyan-bluish-gray-border-color {
+            border-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+        }
+
+        .has-white-border-color {
+            border-color: var(--wp--preset--color--white) !important;
+        }
+
+        .has-pale-pink-border-color {
+            border-color: var(--wp--preset--color--pale-pink) !important;
+        }
+
+        .has-vivid-red-border-color {
+            border-color: var(--wp--preset--color--vivid-red) !important;
+        }
+
+        .has-luminous-vivid-orange-border-color {
+            border-color: var(--wp--preset--color--luminous-vivid-orange) !important;
+        }
+
+        .has-luminous-vivid-amber-border-color {
+            border-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+        }
+
+        .has-light-green-cyan-border-color {
+            border-color: var(--wp--preset--color--light-green-cyan) !important;
+        }
+
+        .has-vivid-green-cyan-border-color {
+            border-color: var(--wp--preset--color--vivid-green-cyan) !important;
+        }
+
+        .has-pale-cyan-blue-border-color {
+            border-color: var(--wp--preset--color--pale-cyan-blue) !important;
+        }
+
+        .has-vivid-cyan-blue-border-color {
+            border-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+        }
+
+        .has-vivid-purple-border-color {
+            border-color: var(--wp--preset--color--vivid-purple) !important;
+        }
+
+        .has-vivid-cyan-blue-to-vivid-purple-gradient-background {
+            background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;
+        }
+
+        .has-light-green-cyan-to-vivid-green-cyan-gradient-background {
+            background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;
+        }
+
+        .has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background {
+            background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;
+        }
+
+        .has-luminous-vivid-orange-to-vivid-red-gradient-background {
+            background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;
+        }
+
+        .has-very-light-gray-to-cyan-bluish-gray-gradient-background {
+            background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;
+        }
+
+        .has-cool-to-warm-spectrum-gradient-background {
+            background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;
+        }
+
+        .has-blush-light-purple-gradient-background {
+            background: var(--wp--preset--gradient--blush-light-purple) !important;
+        }
+
+        .has-blush-bordeaux-gradient-background {
+            background: var(--wp--preset--gradient--blush-bordeaux) !important;
+        }
+
+        .has-luminous-dusk-gradient-background {
+            background: var(--wp--preset--gradient--luminous-dusk) !important;
+        }
+
+        .has-pale-ocean-gradient-background {
+            background: var(--wp--preset--gradient--pale-ocean) !important;
+        }
+
+        .has-electric-grass-gradient-background {
+            background: var(--wp--preset--gradient--electric-grass) !important;
+        }
+
+        .has-midnight-gradient-background {
+            background: var(--wp--preset--gradient--midnight) !important;
+        }
+
+        .has-small-font-size {
+            font-size: var(--wp--preset--font-size--small) !important;
+        }
+
+        .has-medium-font-size {
+            font-size: var(--wp--preset--font-size--medium) !important;
+        }
+
+        .has-large-font-size {
+            font-size: var(--wp--preset--font-size--large) !important;
+        }
+
+        .has-x-large-font-size {
+            font-size: var(--wp--preset--font-size--x-large) !important;
+        }
+    </style>
+    <link data-minify="1" rel="stylesheet" id="oxygen-css" href="css/oxygen.css" media="all">
+    <script type="rocketlazyloadscript"
+        data-rocket-src="https://scroogemcduck.fun/wp-includes/js/jquery/jquery.min.js?ver=3.7.1"
+        id="jquery-core-js"></script>
+    <link rel="https://api.w.org/" href="https://scroogemcduck.fun/wp-json/">
+    <link rel="alternate" type="application/json" href="https://scroogemcduck.fun/wp-json/wp/v2/pages/65">
+    <link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://scroogemcduck.fun/xmlrpc.php?rsd">
+    <link rel="shortlink" href="https://flarefoxInu.xyz">
+    <link rel="alternate" type="application/json+oembed"
+        href="https://scroogemcduck.fun/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsatoshipanda.io%2F">
+    <link rel="alternate" type="text/xml+oembed"
+        href="https://scroogemcduck.fun/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsatoshipanda.io%2F&amp;format=xml">
+    <style id="script-63f353782cf55-css" type="text/css">
+        html,
+        body {
+            background: #222855;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            position: relative;
+            margin: 0;
+            padding: 0;
+            background-size: 100%;
+            background-position-x: center;
+            background-repeat: no-repeat;
+            padding-bottom: 43%;
+        }
+
+        @media only screen and (max-width: 1469px) {
+            .header {
+                background-size: 120% !important;
+            }
+        }
+
+        @media only screen and (max-width: 1146px) {
+            .header {
+                background-size: 140% !important;
+            }
+        }
+
+        @media only screen and (max-width: 894px) {
+            .header {
+                background-size: 160% !important;
+            }
+        }
+
+        @media only screen and (max-width: 767px) {
+            .header {
+                background-size: 200% !important;
+            }
+        }
+
+        @media only screen and (max-width: 616px) {
+            .header {
+                background-size: 240% !important;
+            }
+        }
+
+        @media only screen and (max-width: 496px) {
+            .header {
+                background-size: 260% !important;
+            }
+        }
+
+        @media only screen and (max-width: 438px) {
+            .header {
+                background-size: 280% !important;
+                padding-bottom: 80%;
+            }
+        }
+
+        @media only screen and (max-width: 402px) {
+            .header {
+                background-size: 300% !important;
+            }
+        }
+
+        @media only screen and (max-width: 360px) {
+            .header {
+                background-size: 350% !important;
+            }
+        }
+
+        .get-panda-button {
+            font-family: 'Exo 2', sans-serif;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 18px 8px 18px;
+            background-image: linear-gradient(-20deg, #b721ff 0%, #21d4fd 100%);
+            box-shadow: 0px 6px 38px rgba(46, 147, 243, 0);
+            transition: box-shadow 0.3s ease-in;
+            cursor: pointer;
+        }
+
+        .get-panda-button:hover {
+            box-shadow: 0px 6px 38px rgba(46, 147, 243, 0.8);
+        }
+
+        .how-to-buy-button,
+        .whitepaper-button {
+            position: relative;
+            border: none !important;
+            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+            cursor: pointer;
+        }
+
+        .how-to-buy-button {
+            border-radius: 30px;
+            background: linear-gradient(to right, rgba(177, 44, 205, 1) 0%, rgba(238, 152, 109, 1) 100%);
+            box-shadow: 0px 6px 38px rgba(210, 52, 108, 0.6);
+        }
+
+        .how-to-buy-button:hover {
+            box-shadow: 0px 6px 38px rgba(210, 52, 108, 1);
+            color: #ffffff;
+        }
+
+        .whitepaper-button {
+            border-radius: 30px;
+            background: linear-gradient(to right, rgba(176, 109, 238, 1) 0%, rgba(32, 197, 238, 1) 100%);
+            box-shadow: 0px 6px 38px rgba(32, 197, 238, 0.1);
+        }
+
+        .whitepaper-button:hover {
+            box-shadow: 0px 6px 38px rgba(32, 197, 238, 0.8);
+            color: #ffffff;
+        }
+
+        .token-address-container {
+            position: relative;
+            border-radius: 20px;
+            font-family: 'Exo 2', sans-serif;
+            z-index: 99;
+        }
+
+        .copy-address-btn {
+            color: #ffffff;
+            border: 1px solid #665DD5;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        .copy-address-btn:hover {
+            color: #ffffff;
+            border: 1px solid #0d102b;
+            background: linear-gradient(to right, rgba(176, 109, 238, 1) 0%, rgba(32, 197, 238, 1) 100%);
+        }
+
+        .tooltip {
+            font-family: 'Exo 2', sans-serif;
+            position: absolute;
+            left: 50%;
+            top: 7px !important;
+            transform: translateX(-50%);
+            background-color: #0e102a;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            width: 85px;
+            text-align: center;
+        }
+
+        @media only screen and (max-width: 992px) {
+            .tooltip {
+                top: 33px !important;
+                left: 50%;
+                z-index: 5;
+            }
+        }
+
+        @media only screen and (max-width: 480px) {
+            .tooltip {
+                top: 29px !important;
+                left: 50%;
+                z-index: 5;
+            }
+        }
+
+        .tooltip--visible {
+            opacity: 1;
+        }
+
+        .our-community {
+            position: relative;
+            margin-top: 5%;
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 100;
+            font-size: 90%;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .card-body {
+            border-radius: 15px;
+            background: linear-gradient(to bottom, rgba(55, 64, 134, 1) 0%, rgba(37, 43, 90, 1) 100%);
+            box-shadow: 0px 18px 18px rgba(8, 13, 33, 0.16);
+        }
+
+        .social-container {
+            border-radius: 30px;
+            background: linear-gradient(to right, rgba(58, 58, 157, 0.9) 0%, rgba(45, 41, 105, 0.7) 100%);
+            background: rgba(76, 71, 168, 0.9);
+            background: linear-gradient(to bottom, rgba(85, 79, 189, 0.7) 0%, rgba(45, 41, 105, 0.7) 100%);
+            box-shadow: 0px 5px 18px rgba(0, 0, 0, 0.17);
+        }
+
+        h2 {
+            text-shadow: 0px 5px 7px #0a111d;
+            text-shadow: 0px 5px 7px #131630;
+        }
+    </style>
+    <link rel="preload" as="image" href="images/Flare_Fox_logo.png">
+    <style id="wp-fonts-local">
+        @font-face {
+            font-family: "DM Sans";
+            font-style: normal;
+            font-weight: 400;
+            font-display: fallback;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/dm-sans/DMSans-Regular.woff2') format('woff2');
+            font-stretch: normal;
+        }
+
+        @font-face {
+            font-family: "DM Sans";
+            font-style: italic;
+            font-weight: 400;
+            font-display: fallback;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/dm-sans/DMSans-Regular-Italic.woff2') format('woff2');
+            font-stretch: normal;
+        }
+
+        @font-face {
+            font-family: "DM Sans";
+            font-style: normal;
+            font-weight: 700;
+            font-display: fallback;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/dm-sans/DMSans-Bold.woff2') format('woff2');
+            font-stretch: normal;
+        }
+
+        @font-face {
+            font-family: "DM Sans";
+            font-style: italic;
+            font-weight: 700;
+            font-display: fallback;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/dm-sans/DMSans-Bold-Italic.woff2') format('woff2');
+            font-stretch: normal;
+        }
+
+        @font-face {
+            font-family: "IBM Plex Mono";
+            font-style: normal;
+            font-weight: 300;
+            font-display: block;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/ibm-plex-mono/IBMPlexMono-Light.woff2') format('woff2');
+            font-stretch: normal;
+        }
+
+        @font-face {
+            font-family: "IBM Plex Mono";
+            font-style: normal;
+            font-weight: 400;
+            font-display: block;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/ibm-plex-mono/IBMPlexMono-Regular.woff2') format('woff2');
+            font-stretch: normal;
+        }
+
+        @font-face {
+            font-family: "IBM Plex Mono";
+            font-style: italic;
+            font-weight: 400;
+            font-display: block;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/ibm-plex-mono/IBMPlexMono-Italic.woff2') format('woff2');
+            font-stretch: normal;
+        }
+
+        @font-face {
+            font-family: "IBM Plex Mono";
+            font-style: normal;
+            font-weight: 700;
+            font-display: block;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/ibm-plex-mono/IBMPlexMono-Bold.woff2') format('woff2');
+            font-stretch: normal;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 200 900;
+            font-display: fallback;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/inter/Inter-VariableFont_slnt,wght.ttf') format('truetype');
+            font-stretch: normal;
+        }
+
+        @font-face {
+            font-family: "Source Serif Pro";
+            font-style: normal;
+            font-weight: 200 900;
+            font-display: fallback;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/source-serif-pro/SourceSerif4Variable-Roman.ttf.woff2') format('woff2');
+            font-stretch: normal;
+        }
+
+        @font-face {
+            font-family: "Source Serif Pro";
+            font-style: italic;
+            font-weight: 200 900;
+            font-display: fallback;
+            src: url('https://scroogemcduck.fun/wp-content/themes/oxygen-is-not-a-theme/assets/fonts/source-serif-pro/SourceSerif4Variable-Italic.ttf.woff2') format('woff2');
+            font-stretch: normal;
+        }
+    </style>
+    <link rel="icon" href="images/Flare_Fox_logo.png" sizes="32x32">
+    <link rel="icon" href="images/Flare_Fox_logo.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="images/Flare_Fox_logo.png">
+    <meta name="msapplication-TileImage" content="images/Flare_Fox_logo.png">
+    <link data-minify="1" rel="stylesheet" id="oxygen-cache-43-css" href="css/43.css" media="all">
+    <link data-minify="1" rel="stylesheet" id="oxygen-universal-styles-css" href="css/universal.css" media="all">
+    <!-- END OF WP_HEAD() -->
+</head>
+
+<body class="home page-template-default page page-id-65 wp-embed-responsive  oxygen-body">
+    <div id="-off-canvas-309-43" class="oxy-off-canvas ">
+        <div class="oxy-offcanvas_backdrop"></div>
+        <div id="-off-canvas-309-43-inner" class="offcanvas-inner oxy-inner-content" role="dialog"
+            aria-label="offcanvas content" tabindex="0" data-start="false" data-click-outside="true"
+            data-trigger-selector=".oxy-burger-trigger" data-esc="true" data-focus-selector=".offcanvas-inner"
+            data-reset="400" data-hashclose="true" data-burger-sync="true" data-overflow="false" data-auto-aria="true">
+            <img id="image-310-43" alt="Flare Fox Inu" src="images/Flare_Fox_logo.png" class="ct-image" srcset=""
+                sizes="(max-width: 289px) 100vw, 289px">
+            <nav id="_nav_menu-312-43"
+                class="oxy-nav-menu oxy-nav-menu-dropdowns oxy-nav-menu-dropdown-arrow oxy-nav-menu-vertical">
+                <div class="oxy-menu-toggle">
+                    <div class="oxy-nav-menu-hamburger-wrap">
+                        <div class="oxy-nav-menu-hamburger">
+                            <div class="oxy-nav-menu-hamburger-line"></div>
+                            <div class="oxy-nav-menu-hamburger-line"></div>
+                            <div class="oxy-nav-menu-hamburger-line"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-main-menu-container">
+                    <ul id="menu-main-menu" class="oxy-nav-menu-list">
+                        <li id="menu-item-45"
+                            class="menu-item menu-item-type-custom menu-item-object-custom menu-item-45">
+                            <a href="#">Home</a>
+                        </li>
+                        <li id="menu-item-44"
+                            class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-44">
+                            <a href="#ecosystem" aria-current="page">Presale</a>
+                        </li>
+                        <li id="menu-item-92"
+                            class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-92">
+                            <a href="#roadmap" aria-current="page">Roadmap</a>
+                        </li>
+
+                        <li id="menu-item-47"
+                            class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-47">
+                            <a href="#community" aria-current="page">Community</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <a id="div_block-315-43" class="ct-link get-panda-button" href="https://app.blazeswap.xyz/swap/">
+                <div id="text_block-316-43" class="ct-text-block">
+                    Buy<br>
+                </div>
+            </a>
+            <div id="fancy_icon-313-43" class="ct-fancy-icon oxy-burger-trigger">
+                <svg id="svg-fancy_icon-313-43">
+                    <use xlink:href="#Lineariconsicon-cross"></use>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div id="code_block-51-43" class="ct-code-block"></div>
+    <header id="section-2-43" class=" ct-section header">
+        <div class="ct-section-inner-wrap">
+            <div id="div_block-4-43" class="ct-div-block">
+                <div id="div_block-6-43" class="ct-div-block">
+                    <img id="image-5-43" alt="Flare Fox Inu" src="images/Flare_Fox_logo.png" class="ct-image" srcset=""
+                        sizes="(max-width: 289px) 100vw, 289px">
+                </div>
+                <nav id="_nav_menu-7-43"
+                    class="oxy-nav-menu oxy-nav-menu-dropdowns oxy-nav-menu-dropdown-arrow oxy-nav-menu-responsive-dropdowns">
+                    <div class="oxy-menu-toggle">
+                        <div class="oxy-nav-menu-hamburger-wrap">
+                            <div class="oxy-nav-menu-hamburger">
+                                <div class="oxy-nav-menu-hamburger-line"></div>
+                                <div class="oxy-nav-menu-hamburger-line"></div>
+                                <div class="oxy-nav-menu-hamburger-line"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-main-menu-container">
+                        <ul id="menu-main-menu-1" class="oxy-nav-menu-list">
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-45">
+                                <a href="#">Home</a>
+                            </li>
+                            <li
+                                class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-44">
+                                <a href="#ecosystem" aria-current="page">Presale</a>
+                            </li>
+                            <li
+                                class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-92">
+                                <a href="#roadmap" aria-current="page">Roadmap</a>
+                            </li>
+
+                            <li
+                                class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-47">
+                                <a href="#community" aria-current="page">Community</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div id="-burger-trigger-308-43" class="oxy-burger-trigger ">
+                    <button aria-label="Open menu" data-touch="click" class="hamburger hamburger--slider "
+                        type="button">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </button>
+                </div>
+                <a id="div_block-8-43" class="interact-button ct-link get-panda-button">
+                    <div id="text_block-9-43" class="ct-text-block">
+                        Buy Presale<br>
+                    </div>
+                </a>
+            </div>
+            <div id="div_block-10-43" class="ct-div-block hero">
+                <h1 id="headline-11-43" class="ct-headline">
+                    Welcome �&nbsp;<span id="span-12-43" class="ct-span">to</span>
+                    <span id="span-15-43" class="ct-span"></span>
+                    Flare Fox<br>
+                </h1>
+                <div id="text_block-18-43" class="ct-text-block">
+                    Flare Fox Inu is unabashedly a memecoin on Flare Network. It offers a unique opportunity to invest
+                    in something that's designed purely for enjoyment, speculation, and the shared excitement of being
+                    part of something playful and unpredictable.
+                </div>
+                <div id="text_block-30-43" class="ct-text-block">Flare Fox Inu is unabashedly a memecoin on Flare
+                    Network. It offers a unique opportunity to invest in something that's designed purely for enjoyment,
+                    speculation, and the shared excitement of being part of something playful and unpredictable.</div>
+                <div id="div_block-19-43" class="ct-div-block">
+                    <a id="div_block-24-43" class="ct-link how-to-buy-button" href="Presale.html" target="_blank">
+                        <div id="text_block-25-43" class="ct-text-block">
+                            Presale Realtime<br>
+                        </div>
+                    </a>
+                    <a id="div_block-22-43" class="interact-button ct-link whitepaper-button">
+                        <div id="text_block-23-43" class="ct-text-block">
+                            Buy Presale<br>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section id="section-60-43" class=" ct-section">
+        <div class="ct-section-inner-wrap">
+            <div id="div_block-32-43" class="ct-div-block token-address-container">
+                <div id="div_block-38-43" class="ct-div-block">
+                    <img id="image-39-43" alt="$FLX" src="images/fox_smile.png" class="ct-image" srcset=""
+                        sizes="(max-width: 136px) 100vw, 136px">
+                    <div id="div_block-43-43" class="ct-div-block">
+                        <div id="text_block-44-43" class="ct-text-block">
+                            Contract Address:<br>
+                        </div>
+                        <div id="text_block-45-43" class="ct-text-block address-text">
+                            0x22757fb83836e3F9F0F353126cACD3B1Dc82a387<br>
+                        </div>
+                    </div>
+                </div>
+                <div id="div_block-53-43" class="ct-div-block copy-address-container">
+                    <div id="div_block-47-43" class="ct-div-block copy-address-btn">
+                        <div id="fancy_icon-48-43" class="ct-fancy-icon">
+                            <svg id="svg-fancy_icon-48-43">
+                                <use xlink:href="#FontAwesomeicon-copy"></use>
+                            </svg>
+                        </div>
+                        <div id="text_block-49-43" class="ct-text-block">
+                            Copy to clipboard<br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <section id="ecosystem" class=" ct-section">
+        <div class="ct-section-inner-wrap">
+            <div id="new_columns-72-43" class="ct-new-columns">
+                <div id="div_block-73-43" class="ct-div-block">
+                    <h2 id="headline-75-43" class="ct-headline">Presales Info</h2>
+                    <h3 id="headline-77-43" class="ct-headline">
+                        Flare Fox Inu <span id="span-79-43" class="ct-span">Presale<span>
+                            </span></span></h3>
+
+                    <div id="text_block-82-43" class="ct-text-block">
+                        Presale will be carried out on our twitter account.<br>
+                        <br>
+                        That's right! 50% supply will be used for presale &amp; presale rate will be 1 FLR = 3200
+                        FLX.<br>
+                        <br>
+                        <span id="span-126-43" class="ct-span">Flare Fox Inu is a meme project that burns 3% on every
+                            transaction.</span>
+                        <br>
+                    </div>
+                </div>
+                <div id="div_block-74-43" class="ct-div-block">
+                    <img loading="lazy" id="image-84-43" alt="" src="images/FLXEcosystem-2024-1.png" class="ct-image"
+                        srcset="images/FLXEcosystem-2024-1.png 700w, images/FLXEcosystem-2024-1-300x244.png 300w"
+                        sizes="(max-width: 700px) 100vw, 700px">
+                </div>
+            </div>
+            <div id="div_block-88-43" class="ct-div-block">
+                <div id="div_block-93-43" class="ct-div-block card-body">
+                    <img loading="lazy" id="image-94-43" alt="Rewards" src="images/rewards.png" class="ct-image"
+                        srcset="" sizes="(max-width: 150px) 100vw, 150px">
+                    <h4 id="headline-95-43" class="ct-headline">Burn Mechanism</h4>
+                    <div id="text_block-97-43" class="ct-text-block">
+                        Each FLX transaction incurs a 3% burn, meaning the more FLX is traded, the more is burned.<br>
+                    </div>
+                </div>
+                <div id="div_block-105-43" class="ct-div-block card-body">
+                    <img loading="lazy" id="image-106-43" alt="Join our community!" src="images/community.png"
+                        class="ct-image" srcset="" sizes="(max-width: 150px) 100vw, 150px">
+                    <h4 id="headline-107-43" class="ct-headline">Community</h4>
+                    <div id="text_block-108-43" class="ct-text-block">We’re making the Flare Fox Inu community the most
+                        high-vibed, fun, and vibrant in the entire crypto space! When you hold FLX, you automatically
+                        become part of the virtual Flare Fox Inu family.</div>
+                </div>
+                <div id="div_block-114-43" class="ct-div-block card-body">
+                    <img loading="lazy" id="image-115-43" alt="Airdrops for holders" src="images/airdrop.png"
+                        class="ct-image" srcset="" sizes="(max-width: 150px) 100vw, 150px">
+                    <h4 id="headline-116-43" class="ct-headline">Locked LP</h4>
+                    <div id="text_block-117-43" class="ct-text-block">51% of the funds raised from the FLX presale will
+                        be allocated to initial liquidity and locked for one year. Furthermore, each transaction will
+                        automatically burn 3% of the traded amount, thereby enhancing and bolstering liquidity.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="section-353-43" class=" ct-section">
+        <div class="ct-section-inner-wrap">
+            <h2 id="headline-356-43" class="ct-headline">Tokenomics</h2>
+            <div id="div_block-402-43" class="ct-div-block">
+                <div id="div_block-403-43" class="ct-div-block tokenomics-item">
+                    <h4 id="headline-410-43" class="ct-headline">
+                        Token Name<br>
+                    </h4>
+                    <div id="text_block-412-43" class="ct-text-block tokenomics-item-text">
+                        Flare Fox<br>
+                    </div>
+                </div>
+                <div id="div_block-420-43" class="ct-div-block tokenomics-item">
+                    <h4 id="headline-421-43" class="ct-headline">
+                        Token Symbol<br>
+                    </h4>
+                    <div id="text_block-422-43" class="ct-text-block tokenomics-item-text">FLX</div>
+                </div>
+                <div id="div_block-426-43" class="ct-div-block tokenomics-item">
+                    <h4 id="headline-427-43" class="ct-headline">Decimals</h4>
+                    <div id="text_block-428-43" class="ct-text-block tokenomics-item-text">18</div>
+                </div>
+                <div id="div_block-431-43" class="ct-div-block tokenomics-item">
+                    <h4 id="headline-432-43" class="ct-headline">Blockchain</h4>
+                    <div id="text_block-433-43" class="ct-text-block tokenomics-item-text">
+                        FLR Chain<br>
+                    </div>
+                </div>
+                <div id="div_block-436-43" class="ct-div-block tokenomics-item">
+                    <h4 id="headline-437-43" class="ct-headline">
+                        Total Supply<br>
+                    </h4>
+                    <div id="text_block-438-43" class="ct-text-block tokenomics-item-text">50,000,000,000</div>
+                </div>
+                <div id="div_block-441-43" class="ct-div-block tokenomics-item">
+                    <h4 id="headline-442-43" class="ct-headline">
+                        Burn Rate<br>
+                    </h4>
+                    <div id="text_block-443-43" class="ct-text-block tokenomics-item-text">3%</div>
+                </div>
+            </div>
+            <h3 id="headline-357-43" class="ct-headline">
+                Token Distribution<br>
+            </h3>
+            <div id="code_block-446-43" class="ct-code-block">
+                <div id="pie-chart-container" style="position: relative; overflow: visible;"></div>
+                <div id="legend"></div>
+                <script src="js/d3.v5.min.js"></script>
+                <script>
+                    (function () {
+                        // Define data
+                        var data = [{
+                            label: 'Presale',
+                            value: 50,
+                            color: '#ff8570'
+                        }, {
+                            label: 'Initial Liquidity',
+                            value: 30,
+                            color: '#0dcbff'
+                        }, {
+                            label: 'Giveaways',
+                            value: 10,
+                            color: '#fde77d'
+                        }, {
+                            label: 'Marketing & Dev',
+                            value: 10,
+                            color: '#8fe0d7'
+                        }];
+
+                        // Function to draw the pie chart
+                        function drawChart() {
+                            // Remove any existing SVG to prevent duplication
+                            d3.select('#pie-chart-container svg').remove();
+
+                            // Calculate the width and height based on the viewport width and the maximum size
+                            var screenWidth = Math.min(window.innerWidth - 40, 420);
+                            // Account for 20px padding on mobile
+                            var containerWidth = Math.min(screenWidth, 420);
+                            var containerHeight = containerWidth;
+                            var radius = containerWidth / 2;
+                            var doughnutWidth = radius * 0.6;
+
+                            // Create SVG element
+                            var svg = d3.select('#pie-chart-container').append('svg').attr('width', containerWidth).attr('height', containerHeight).append('g').attr('transform', 'translate(' + radius + ',' + radius + ')');
+
+                            // Define arc generator
+                            var arc = d3.arc().innerRadius(doughnutWidth).outerRadius(radius).padAngle(0.05);
+
+                            var hoverArc = d3.arc().innerRadius(doughnutWidth).outerRadius(radius * 1.05);
+                            // For the hover effect
+
+                            // Define pie layout
+                            var pie = d3.pie().value(function (d) {
+                                return d.value;
+                            }).sort(null);
+
+                            // Define color scale
+                            var color = d3.scaleOrdinal().domain(data.map(function (d) {
+                                return d.label;
+                            })).range(data.map(function (d) {
+                                return d.color;
+                            }));
+
+                            // Create arcs
+                            var arcs = svg.selectAll('.arc').data(pie(data)).enter().append('g').attr('class', 'arc');
+
+                            // Append paths to the arcs
+                            arcs.append('path').attr('d', arc).attr('fill', function (d) {
+                                return color(d.data.label);
+                            }).on('mouseover', function () {
+                                var hoveredSlice = d3.select(this);
+                                hoveredSlice.transition().duration(200).attr('d', hoverArc);
+                            }).on('mouseout', function () {
+                                var hoveredSlice = d3.select(this);
+                                hoveredSlice.transition().duration(200).attr('d', arc);
+                            });
+
+                            // Add legend on top
+                            var legend = d3.select("#legend").attr('class', 'legend').style('color', 'white').selectAll('div').data(data).enter().append('div').attr('class', 'legend-item');
+
+                            legend.append('span').attr('class', 'legend-color').style('background-color', function (d) {
+                                return color(d.label);
+                            });
+
+                            legend.append('span').attr('class', 'legend-label').text(function (d) {
+                                return d.label;
+                            });
+                        }
+
+                        // Initial draw
+                        drawChart();
+
+                        // Redraw chart on window resize
+                        window.addEventListener('resize', drawChart);
+                    }
+                    )();
+                </script>
+                <style>
+                    #pie-chart-container {
+                        max-width: 420px;
+                        margin: 0 auto;
+                        position: relative;
+                        overflow: visible;
+                    }
+
+                    #pie-chart-container svg {
+                        max-width: 100%;
+                        display: block;
+                        /* Ensures that the SVG doesn't exceed its container */
+                        margin: 0 auto;
+                        /* Center the SVG */
+                        overflow: visible;
+                    }
+
+                    .legend {
+                        width: 140px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-start;
+                        margin-left: auto;
+                        margin-right: auto;
+                        margin-top: 30px;
+                    }
+
+                    .legend-item {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 5px;
+                    }
+
+                    .legend-color {
+                        width: 20px;
+                        height: 20px;
+                        display: block;
+                        margin-right: 5px;
+                    }
+
+                    .legend-label {
+                        font-size: 14px;
+                        color: #fff;
+                    }
+                </style>
+            </div>
+        </div>
+    </section>
+    <section id="roadmap" class=" ct-section">
+        <div class="ct-section-inner-wrap">
+            <h2 id="headline-334-43" class="ct-headline">
+                Roadmap<br>
+            </h2>
+            <div id="div_block-335-43" class="ct-div-block">
+                <div id="div_block-336-43" class="ct-div-block">
+                    <div id="div_block-337-43" class="ct-div-block">
+                        <div id="div_block-338-43" class="ct-div-block">
+                            <div id="text_block-339-43" class="ct-text-block">Phase 1</div>
+                            <div id="_rich_text-340-43" class="oxy-rich-text">
+                                <ul>
+                                    <li>Build and Grow the Flare Fox Inu Community.</li>
+                                    <li>Smart Contract Created.</li>
+                                    <li>Smart Contract Audited.</li>
+                                    <li>Presale on Twitter.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="div_block-341-43" class="ct-div-block">
+                        <div id="div_block-342-43" class="ct-div-block">
+                            <div id="text_block-343-43" class="ct-text-block">Phase 2</div>
+                            <div id="_rich_text-344-43" class="oxy-rich-text">
+                                <ul>
+                                    <li>FLX/FLR LP Launched &amp; Liquidity Added/Locked.</li>
+                                    <li>Presale Token distribution.</li>
+                                    <li>Giveaways Partnerships.</li>
+                                    <li>Marketing Partnerships &amp; Campaigns.</li>
+                                    <li>Community building &amp; project developments.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="community" class=" ct-section">
+        <div class="ct-section-inner-wrap">
+            <div id="new_columns-130-43" class="ct-new-columns">
+                <div id="div_block-131-43" class="ct-div-block">
+                    <h2 id="headline-132-43" class="ct-headline">Community</h2>
+                    <h3 id="headline-133-43" class="ct-headline">
+                        <span id="span-154-43" class="ct-span">Join</span>
+                        Our Community<br>
+                    </h3>
+                    <div id="text_block-135-43" class="ct-text-block">
+                        In a world brimming with serious cryptocurrencies and complex use cases, Flare Fox Inu stands
+                        out as a beacon of lighthearted fun. With a total supply of 10 billion tokens, we're here to
+                        spread joy, laughter, and a bit of mischief in the crypto space. Flare Fox Inu is your ticket to
+                        being part of a community that values humor and camaraderie over everything else.!<br>
+                        <br>Flare Fox Inu is unabashedly a memecoin. In the tradition of the greatest memecoins, it
+                        doesn't pretend to solve the world's problems – unless that problem is a shortage of smiles in
+                        the crypto community. Instead, it offers a unique opportunity to invest in something that's
+                        designed purely for enjoyment, speculation, and the shared excitement of being part of something
+                        playful and unpredictable.
+                    </div>
+                    <span id="span-163-43" class="ct-span">If you love memes and crypto, then join our vibrant
+                        community!</span>
+                </div>
+                <div id="div_block-137-43" class="ct-div-block">
+                    <img loading="lazy" id="image-138-43" alt="Join our community!" src="images/socials-img.png"
+                        class="ct-image" srcset="images/socials-img.png 460w, images/socials-img-240x300.png 240w"
+                        sizes="(max-width: 460px) 100vw, 460px">
+                </div>
+            </div>
+            <div id="div_block-139-43" class="ct-div-block">
+
+                <div id="div_block-200-43" class="ct-div-block social-container">
+                    <div id="div_block-201-43" class="ct-div-block">
+                        <img loading="lazy" id="image-202-43" alt="Join us on Telegram!" src="images/telegram-icon.png"
+                            class="ct-image" srcset="" sizes="(max-width: 80px) 100vw, 80px">
+                        <div id="div_block-203-43" class="ct-div-block">
+                            <h4 id="headline-204-43" class="ct-headline">Telegram</h4>
+                            <a id="text_block-205-43" class="ct-link-text" href="https://t.me/flarefox"
+                                target="_blank">https://t.me/flarefox</a>
+                        </div>
+                    </div>
+                    <div id="text_block-206-43" class="ct-text-block">
+                        All-in-one Flare Fox Inu updates<br>
+                    </div>
+                    <a id="div_block-207-43" class="ct-link how-to-buy-button" href="https://t.me/flarefox"
+                        target="_blank">
+                        <div id="text_block-208-43" class="ct-text-block">
+                            Join Telegram<br>
+                        </div>
+                        <div id="fancy_icon-209-43" class="ct-fancy-icon">
+                            <svg id="svg-fancy_icon-209-43">
+                                <use xlink:href="#FontAwesomeicon-external-link"></use>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+                <div id="div_block-210-43" class="ct-div-block social-container">
+                    <div id="div_block-211-43" class="ct-div-block">
+                        <img loading="lazy" id="image-212-43" alt="Follow us on Twitter!" src="images/twitter-icon.png"
+                            class="ct-image" srcset="" sizes="(max-width: 80px) 100vw, 80px">
+                        <div id="div_block-213-43" class="ct-div-block">
+                            <h4 id="headline-214-43" class="ct-headline">Twitter</h4>
+                            <a id="text_block-215-43" class="ct-link-text" href="https://twitter.com/NFTMuseum0"
+                                target="_blank">@NFTMuseum0</a>
+                        </div>
+                    </div>
+                    <div id="text_block-216-43" class="ct-text-block">Stay up to date on the latest news</div>
+                    <a id="div_block-217-43" class="ct-link how-to-buy-button" href="https://twitter.com/NFTMuseum0"
+                        target="_blank">
+                        <div id="text_block-218-43" class="ct-text-block">
+                            Follow<br>
+                        </div>
+                        <div id="fancy_icon-219-43" class="ct-fancy-icon">
+                            <svg id="svg-fancy_icon-219-43">
+                                <use xlink:href="#FontAwesomeicon-external-link"></use>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="section-302-43" class=" ct-section">
+        <div class="ct-section-inner-wrap">
+            <img id="image-304-43" alt="Flare Fox Inu" src="images/Flare_Fox_logo.png" class="ct-image" srcset=""
+                sizes="(max-width: 289px) 100vw, 289px">
+            <div id="-burger-trigger-330-43" class="oxy-burger-trigger ">
+                <button aria-label="Open menu" data-touch="click" class="hamburger hamburger--slider " type="button">
+                    <span class="hamburger-box">
+                        <span class="hamburger-inner"></span>
+                    </span>
+                </button>
+            </div>
+            <nav id="_nav_menu-305-43"
+                class="oxy-nav-menu oxy-nav-menu-dropdowns oxy-nav-menu-dropdown-arrow oxy-nav-menu-responsive-dropdowns">
+                <div class="oxy-menu-toggle">
+                    <div class="oxy-nav-menu-hamburger-wrap">
+                        <div class="oxy-nav-menu-hamburger">
+                            <div class="oxy-nav-menu-hamburger-line"></div>
+                            <div class="oxy-nav-menu-hamburger-line"></div>
+                            <div class="oxy-nav-menu-hamburger-line"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-main-menu-container">
+                    <ul id="menu-main-menu-2" class="oxy-nav-menu-list">
+                        <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-45">
+                            <a href="#">Home</a>
+                        </li>
+
+                        <li
+                            class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-92">
+                            <a href="#roadmap" aria-current="page">Roadmap</a>
+                        </li>
+                        <li
+                            class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-44">
+                            <a href="#ecosystem" aria-current="page">Presale</a>
+                        </li>
+                        <li
+                            class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-47">
+                            <a href="#community" aria-current="page">Community</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+        </div>
+    </section>
+    <!-- WP_FOOTER -->
+    <!--?xml version="1.0"?-->
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true"
+        style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1">
+        <defs>
+            <symbol id="FontAwesomeicon-external-link" viewBox="0 0 28 28">
+                <title>external-link</title>
+                <path
+                    d="M22 14.5v5c0 2.484-2.016 4.5-4.5 4.5h-13c-2.484 0-4.5-2.016-4.5-4.5v-13c0-2.484 2.016-4.5 4.5-4.5h11c0.281 0 0.5 0.219 0.5 0.5v1c0 0.281-0.219 0.5-0.5 0.5h-11c-1.375 0-2.5 1.125-2.5 2.5v13c0 1.375 1.125 2.5 2.5 2.5h13c1.375 0 2.5-1.125 2.5-2.5v-5c0-0.281 0.219-0.5 0.5-0.5h1c0.281 0 0.5 0.219 0.5 0.5zM28 1v8c0 0.547-0.453 1-1 1-0.266 0-0.516-0.109-0.703-0.297l-2.75-2.75-10.187 10.187c-0.094 0.094-0.234 0.156-0.359 0.156s-0.266-0.063-0.359-0.156l-1.781-1.781c-0.094-0.094-0.156-0.234-0.156-0.359s0.063-0.266 0.156-0.359l10.187-10.187-2.75-2.75c-0.187-0.187-0.297-0.438-0.297-0.703 0-0.547 0.453-1 1-1h8c0.547 0 1 0.453 1 1z">
+                </path>
+            </symbol>
+            <symbol id="FontAwesomeicon-copy" viewBox="0 0 28 28">
+                <title>copy</title>
+                <path
+                    d="M26.5 6c0.828 0 1.5 0.672 1.5 1.5v19c0 0.828-0.672 1.5-1.5 1.5h-15c-0.828 0-1.5-0.672-1.5-1.5v-4.5h-8.5c-0.828 0-1.5-0.672-1.5-1.5v-10.5c0-0.828 0.484-1.984 1.062-2.562l6.375-6.375c0.578-0.578 1.734-1.062 2.562-1.062h6.5c0.828 0 1.5 0.672 1.5 1.5v5.125c0.609-0.359 1.391-0.625 2-0.625h6.5zM18 9.328l-4.672 4.672h4.672v-4.672zM8 3.328l-4.672 4.672h4.672v-4.672zM11.062 13.438l4.937-4.937v-6.5h-6v6.5c0 0.828-0.672 1.5-1.5 1.5h-6.5v10h8v-4c0-0.828 0.484-1.984 1.062-2.562zM26 26v-18h-6v6.5c0 0.828-0.672 1.5-1.5 1.5h-6.5v10h14z">
+                </path>
+            </symbol>
+        </defs>
+    </svg>
+    <!--?xml version="1.0"?-->
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1">
+        <defs>
+            <symbol id="Lineariconsicon-cross" viewBox="0 0 20 20">
+                <title>cross</title>
+                <path class="path1"
+                    d="M10.707 10.5l5.646-5.646c0.195-0.195 0.195-0.512 0-0.707s-0.512-0.195-0.707 0l-5.646 5.646-5.646-5.646c-0.195-0.195-0.512-0.195-0.707 0s-0.195 0.512 0 0.707l5.646 5.646-5.646 5.646c-0.195 0.195-0.195 0.512 0 0.707 0.098 0.098 0.226 0.146 0.354 0.146s0.256-0.049 0.354-0.146l5.646-5.646 5.646 5.646c0.098 0.098 0.226 0.146 0.354 0.146s0.256-0.049 0.354-0.146c0.195-0.195 0.195-0.512 0-0.707l-5.646-5.646z">
+                </path>
+            </symbol>
+        </defs>
+    </svg>
+    <style>
+        .ct-extrasocialsicon-discord {
+            width: 1.25em
+        }
+    </style>
+    <style>
+        .ct-extrasocialsicon-telegram {
+            width: 0.96875em
+        }
+    </style>
+    <!--?xml version="1.0"?-->
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true"
+        style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1">
+        <defs>
+            <symbol id="extrasocialsicon-discord" viewBox="0 0 40 32">
+                <title>discord</title>
+                <path
+                    d="M32.783 4.365c-0.010-0.020-0.027-0.035-0.047-0.044l-0.001-0c-2.16-1.019-4.67-1.825-7.297-2.292l-0.183-0.027c-0.006-0.001-0.013-0.002-0.021-0.002-0.043 0-0.080 0.023-0.099 0.058l-0 0.001c-0.286 0.503-0.598 1.131-0.878 1.776l-0.053 0.136c-1.263-0.202-2.718-0.317-4.201-0.317s-2.938 0.115-4.358 0.337l0.158-0.020c-0.331-0.771-0.647-1.399-0.996-2.007l0.050 0.094c-0.021-0.035-0.059-0.058-0.102-0.058-0.007 0-0.013 0.001-0.019 0.002l0.001-0c-2.81 0.493-5.32 1.299-7.666 2.397l0.185-0.078c-0.021 0.009-0.038 0.024-0.049 0.042l-0 0c-4.764 7.115-6.069 14.055-5.429 20.909 0.004 0.035 0.022 0.065 0.048 0.086l0 0c2.622 1.961 5.671 3.541 8.961 4.578l0.216 0.059c0.010 0.003 0.022 0.005 0.034 0.005 0.039 0 0.073-0.018 0.095-0.047l0-0c0.656-0.882 1.279-1.882 1.82-2.931l0.057-0.122c0.008-0.015 0.013-0.033 0.013-0.053 0-0.050-0.031-0.092-0.075-0.109l-0.001-0c-1.118-0.431-2.062-0.89-2.961-1.417l0.095 0.051c-0.035-0.021-0.058-0.058-0.058-0.102 0-0.038 0.018-0.072 0.046-0.094l0-0c0.193-0.144 0.385-0.294 0.569-0.446 0.019-0.016 0.045-0.026 0.072-0.026 0.017 0 0.033 0.004 0.047 0.010l-0.001-0c6.014 2.745 12.526 2.745 18.469 0 0.014-0.007 0.031-0.011 0.049-0.011 0.027 0 0.052 0.010 0.072 0.026l-0-0c0.184 0.152 0.377 0.303 0.571 0.448 0.029 0.022 0.047 0.056 0.047 0.094 0 0.043-0.023 0.080-0.057 0.101l-0.001 0c-0.81 0.483-1.755 0.942-2.739 1.321l-0.129 0.044c-0.045 0.017-0.076 0.060-0.076 0.11 0 0.020 0.005 0.038 0.013 0.054l-0-0.001c0.613 1.176 1.236 2.174 1.925 3.121l-0.049-0.070c0.021 0.030 0.056 0.049 0.095 0.049 0.012 0 0.024-0.002 0.035-0.005l-0.001 0c3.511-1.092 6.565-2.673 9.271-4.694l-0.080 0.057c0.027-0.020 0.045-0.050 0.048-0.084l0-0c0.767-7.924-1.283-14.807-5.433-20.909zM13.906 21.099c-1.811 0-3.303-1.662-3.303-3.702s1.463-3.703 3.303-3.703c1.854 0 3.332 1.676 3.303 3.702 0 2.041-1.463 3.703-3.303 3.703zM26.117 21.099c-1.811 0-3.303-1.662-3.303-3.702s1.463-3.703 3.303-3.703c1.854 0 3.332 1.676 3.303 3.702 0 2.041-1.449 3.703-3.303 3.703z">
+                </path>
+            </symbol>
+            <symbol id="extrasocialsicon-twitter" viewBox="0 0 32 32">
+                <title>twitter</title>
+                <path
+                    d="M28.711 9.482c0.020 0.284 0.020 0.569 0.020 0.853 0 8.67-6.599 18.66-18.66 18.66-3.716 0-7.168-1.076-10.071-2.944 0.528 0.061 1.036 0.081 1.584 0.081 3.066 0 5.888-1.035 8.142-2.802-2.883-0.061-5.3-1.949-6.132-4.548 0.406 0.061 0.812 0.102 1.239 0.102 0.589 0 1.178-0.081 1.726-0.223-3.005-0.609-5.259-3.249-5.259-6.437v-0.081c0.873 0.487 1.888 0.792 2.964 0.832-1.766-1.178-2.924-3.188-2.924-5.462 0-1.218 0.325-2.335 0.893-3.31 3.228 3.98 8.081 6.579 13.523 6.863-0.101-0.487-0.162-0.995-0.162-1.502 0-3.614 2.924-6.558 6.558-6.558 1.888 0 3.594 0.792 4.792 2.071 1.482-0.284 2.904-0.832 4.162-1.584-0.487 1.523-1.523 2.802-2.883 3.614 1.32-0.142 2.599-0.508 3.777-1.015-0.893 1.299-2.010 2.457-3.289 3.391z">
+                </path>
+            </symbol>
+            <symbol id="extrasocialsicon-telegram" viewBox="0 0 31 32">
+                <title>telegram</title>
+                <path
+                    d="M15.5 0.5c-8.56 0-15.5 6.94-15.5 15.5s6.94 15.5 15.5 15.5 15.5-6.94 15.5-15.5-6.94-15.5-15.5-15.5zM22.684 11.041c-0.233 2.451-1.243 8.399-1.756 11.144-0.217 1.162-0.645 1.551-1.059 1.589-0.9 0.083-1.584-0.595-2.455-1.166-1.364-0.894-2.135-1.451-3.459-2.324-1.53-1.008-0.538-1.563 0.334-2.469 0.228-0.237 4.194-3.844 4.271-4.172 0.010-0.041 0.019-0.194-0.072-0.274s-0.224-0.053-0.321-0.031q-0.205 0.047-6.538 4.321-0.928 0.637-1.681 0.621c-0.553-0.012-1.618-0.313-2.409-0.57-0.971-0.316-1.742-0.482-1.675-1.018q0.053-0.419 1.153-0.856 6.778-2.953 9.039-3.894c4.305-1.79 5.199-2.101 5.782-2.112 0.128-0.002 0.415 0.030 0.601 0.18 0.12 0.105 0.201 0.251 0.22 0.417l0 0.003c0.021 0.127 0.033 0.273 0.033 0.421 0 0.067-0.002 0.133-0.007 0.198l0-0.009z">
+                </path>
+            </symbol>
+        </defs>
+    </svg>
+    <script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+
+			jQuery(document).ready(function() {
+				jQuery('body').on('click', '.oxy-menu-toggle', function() {
+					jQuery(this).parent('.oxy-nav-menu').toggleClass('oxy-nav-menu-open');
+					jQuery('body').toggleClass('oxy-nav-menu-prevent-overflow');
+					jQuery('html').toggleClass('oxy-nav-menu-prevent-overflow');
+				});
+				var selector = '.oxy-nav-menu-open .menu-item a[href*="#"]';
+				jQuery('body').on('click', selector, function(){
+					jQuery('.oxy-nav-menu-open').removeClass('oxy-nav-menu-open');
+					jQuery('body').removeClass('oxy-nav-menu-prevent-overflow');
+					jQuery('html').removeClass('oxy-nav-menu-prevent-overflow');
+					jQuery(this).click();
+				});
+			});
+		
+        </script>
+    <script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+
+            jQuery(document).ready(oxygen_init_burger);
+            function oxygen_init_burger($) {
+                
+                $('.oxy-burger-trigger').each(function( i, OxyBurgerTrigger ) {
+                    
+                    let touchEventOption =  $( OxyBurgerTrigger ).children('.hamburger').data('touch');
+                    let touchEvent = 'ontouchstart' in window ? touchEventOption : 'click';     
+                    
+                    // Close hamburger when element clicked 
+                    $( OxyBurgerTrigger ).on( touchEvent, function(e) {    
+                        
+                        e.stopPropagation();
+
+                        // Check user wants animations
+                        if ($(this).children( '.hamburger' ).data('animation') !== 'disable') {
+                            $(this).children( '.hamburger' ).toggleClass('is-active');
+                        }
+                        
+                    } );
+                    
+                } );
+                
+                
+                
+                // For listening for modals closing to close the hamburger
+                var className = 'live';
+                var target = document.querySelectorAll(".oxy-modal-backdrop[data-trigger='user_clicks_element']");
+                for (var i = 0; i < target.length; i++) {
+
+                    // create an observer instance
+                    var observer = new MutationObserver(function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            
+                            // When the style changes on modal backdrop
+                            if (mutation.attributeName === 'style') {
+
+                                // If the modal is live and is closing  
+                                if(!mutation.target.classList.contains(className)){
+
+                                    // Close the toggle
+                                    closeToggle(mutation.target);
+
+                                }
+                            }  
+                        });
+                    });
+
+                    // configuration of the observer
+                    var config = { 
+                        attributes: true,
+                        attributeFilter: ['style'],
+                        subtree: false
+                    };
+
+                    // pass in the target node, as well as the observer options
+                    observer.observe(target[i], config);
+                }
+                
+                
+               // Helper function to close hamburger if modal closed.
+                function closeToggle(elem) {
+                    
+                    var triggerSelector = $($(elem).data('trigger-selector'));
+                    
+                    // Abort if burger not being used as the trigger or animations not turned on
+                    if ((!triggerSelector.hasClass('oxy-burger-trigger')) || (triggerSelector.children( '.hamburger' ).data('animation') === 'disable') ) {
+                        return;
+                    }
+                    // Close that particular burger
+                    triggerSelector.children('.hamburger').removeClass('is-active');
+                    
+                }
+                
+                
+            } 
+        </script>
+
+    <script>
+        document.getElementById("div_block-47-43").addEventListener("click", function () {
+            // Specify the element containing the text you want to copy
+            const textToCopy = document.getElementById("text_block-45-43").innerText;
+
+            // Create a temporary textarea element to hold the text to copy
+            const tempElement = document.createElement("textarea");
+            tempElement.value = textToCopy;
+            document.body.appendChild(tempElement);
+
+            // Select and copy the text from the textarea
+            tempElement.select();
+            document.execCommand("copy");
+
+            // Remove the temporary element
+            document.body.removeChild(tempElement);
+
+            // Optional: Give feedback to the user that text has been copied
+            alert("Copied to clipboard!");
+        });
+    </script>
+
+    <script>
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var menuToggle = document.querySelector(".oxy-menu-toggle");
+            var offCanvas = document.getElementById("-off-canvas-309-43");
+            var offCanvasBackdrop = document.querySelector(".oxy-offcanvas_backdrop");
+
+            // Function to toggle the menu
+            function toggleMenu() {
+                offCanvas.classList.toggle("open"); // Add an 'open' class or your equivalent to manage visibility
+            }
+
+            // Event listener for menu toggle
+            menuToggle.addEventListener("click", function () {
+                toggleMenu();
+            });
+
+            // Close the menu when clicking outside of it
+            document.addEventListener("click", function (event) {
+                var isClickInsideMenu = offCanvas.contains(event.target) || menuToggle.contains(event.target);
+
+                if (!isClickInsideMenu && offCanvas.classList.contains("open")) {
+                    toggleMenu(); // If the menu is open and the click is outside, close it
+                }
+            });
+
+            // Optional: Close the menu when clicking the backdrop
+            offCanvasBackdrop.addEventListener("click", function () {
+                if (offCanvas.classList.contains("open")) {
+                    toggleMenu();
+                }
+            });
+        });
+    </script>
+
+    <script>
+        const fetchFlareNetworkBalance = async () => {
+            const address = '0x394E8ECae3DE4c426882AD07b0bb3014b1c282c6';
+            const apiUrl = `https://flare-explorer.flare.network/api?module=account&action=balance&address=${address}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                const flrBalance = parseInt(data.result, 10) / 1e18; // Assuming the balance is returned in Wei, convert to FLR
+                const flxBalance = flrBalance * 3200; // Calculate FLX
+
+                document.getElementById('flrBalance').textContent = flrBalance.toFixed(2); // Update FLR balance display
+                document.getElementById('flxBalance').textContent = flxBalance.toFixed(2); // Update FLX balance display
+            } catch (error) {
+                console.error('Failed to fetch balance:', error);
+                document.getElementById('balanceDisplay').textContent = 'Failed to load balance data.';
+            }
+        };
+
+        fetchFlareNetworkBalance();
+    </script>
+
+    <script type="rocketlazyloadscript" data-minify="1"
+        data-rocket-src="https://FLXmcduck.fun/wp-content/cache/min/1/wp-content/plugins/oxyextras/components/assets/inert.js?ver=1708153256"
+        id="extras-inert-js" defer=""></script>
+    <script type="rocketlazyloadscript" data-minify="1"
+        data-rocket-src="https://FLXmcduck.fun/wp-content/cache/min/1/wp-content/plugins/oxyextras/components/assets/offcanvas-init.js?ver=1708153256"
+        id="extras-offcanvas-js" defer=""></script>
+    <script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="ct-footer-js"></script>
+    <script type="rocketlazyloadscript" data-rocket-type="text/javascript" id="ct_code_block_js_51">
+            (function($) {
+// Add click event listener to the ".copy-address-btn" element
+$('.copy-address-btn, .address-text').on('click', function() {
+// Create a new "textarea" element and set its value to the text that needs to be copied
+var $temp = $("<textarea>");
+$("body").append($temp);
+$temp.val('0xF251D850898758775958691Df66895d0b5F837AD').select();
+// Copy the contents of the "textarea" to the clipboard
+document.execCommand('copy');
+
+// Remove the "textarea" from the page
+$temp.remove();
+
+// Create a new tooltip element and add it to the page
+var tooltip = $('<div class="tooltip">Copied!</div>');
+$('.copy-address-btn').after(tooltip);
+
+// Position the tooltip above the button
+var tooltipPosition = $('.copy-address-btn').position().right + ($('.copy-address-btn').outerWidth() / 2);
+tooltip.css('left', tooltipPosition);
+
+// Make the tooltip visible
+tooltip.addClass('tooltip--visible');
+
+// Remove the tooltip after 2 seconds
+setTimeout(function() {
+  tooltip.removeClass('tooltip--visible');
+  tooltip.remove();
+}, 2000);
+	});
+})(jQuery);
+
+(function($){
+  function shortenAddressText() {
+    var screenWidth = $(window).width();
+    if (screenWidth < 768) {
+      $(".address-text").each(function() {
+        var fullText = $(this).text();
+        var textLength = fullText.length;
+        var shortText = fullText.slice(0, 22) + "..." + fullText.slice(textLength - 4, textLength);
+        $(this).text(shortText);
+      });
+    } else {
+      $(".address-text").each(function() {
+        var fullText = $(this).text();
+        $(this).text(fullText);
+      });
+    }
+  }
+  
+  $(document).ready(function() {
+    shortenAddressText();
+  });
+  
+  $(window).resize(function() {
+    shortenAddressText();
+  });
+})(jQuery);
+        </script>
+    <!-- /WP_FOOTER -->
+
+
+
+</body>
+
+</html>
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1708645313 -->
